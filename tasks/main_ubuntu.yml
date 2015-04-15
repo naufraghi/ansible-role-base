@@ -54,7 +54,7 @@
   user: name=deploy comment="Ansible Deploy User" group=deploy groups=sudo password="{{ deploy_password }}" shell=/usr/bin/fish
 
 - name: Authorize ssh key for deploy user
-  authorized_key: user=deploy key="{{ items }}" state=present
+  authorized_key: user=deploy key="{{ item }}" state=present
   with_items: deploy_authorized_keys
 
 #
