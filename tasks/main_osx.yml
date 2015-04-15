@@ -1,0 +1,58 @@
+---
+- name: Install Command Line Tools
+  command: softwareupdate -i "Command Line Tools (OS X 10.10)-6.3" creates=/Library/Developer/CommandLineTools
+
+#
+# Homebrew
+#
+
+- name: Make sure Homebrew directory exists
+  file: path=/usr/local state=directory mode=0775 owner=root group=admin
+
+- name: Install Homebrew
+  git: repo=https://github.com/Homebrew/homebrew.git dest=/usr/local depth=1 update=no
+
+- name: Setup Homebrew for use by multiple administrators
+  file: path={{ item }} mode=0775 owner=root group=admin recurse=yes state=directory
+  with_items:
+    - /usr/local
+    - /Library/Caches/Homebrew
+
+- name: Reset permissions on Homebrew's own files
+  command: git reset HEAD --hard chdir=/usr/local
+
+- name: Update Homebrew
+  homebrew: update_homebrew=yes
+
+#
+# Caskroom
+#
+
+- name: Tap Caskroom
+  homebrew_tap: tap=caskroom/cask
+
+- name: Install Caskroom
+  homebrew: name=brew-cask
+
+#
+# Application Firewall
+#
+
+- name: Configure the Application Firewall
+  command: "{{ item }}"
+  with_items:
+    - /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on
+    - /usr/libexec/ApplicationFirewall/socketfilterfw --setblockall off
+    - /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+    - /usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode off
+    - /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+
+#
+# Tighten up SSH
+#
+
+- name: Disable SSH login for root user
+  lineinfile: dest=/etc/sshd_config regexp=^PermitRootLogin line="PermitRootLogin no" state=present
+
+- name: Disable password-based authentication for SSH
+  lineinfile: dest=/etc/sshd_config regexp=^PasswordAuthentication line="PasswordAuthentication no" state=present

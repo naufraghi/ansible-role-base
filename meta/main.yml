@@ -5,6 +5,9 @@ galaxy_info:
   license: MIT
   min_ansible_version: 1.8
   platforms:
+    - name: MacOSX
+      versions:
+        - 10.10.3
     - name: Ubuntu
       versions:
         - trusty
