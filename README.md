@@ -51,7 +51,9 @@ On Ubuntu, this role performs the following:
 
 ## Usage
 
-A minimal playbook which makes use of this role is the following:
+Clone this repo in `roles/base`, put your inventory in `hosts`.
+
+A minimal playbook which makes use of this role is the following: `server.yml`
 
 ```yaml
 ---
@@ -65,4 +67,12 @@ A minimal playbook which makes use of this role is the following:
     deploy_authorized_keys:
       - "" # Put an SSH public key here
     deploy_password: "" # Put an encrypted password here
+```
+
+You can generate an encrypted password as shown in the [Ansible FAQ](http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module).
+
+Then run:
+
+```
+ansible-playbook -i hosts -u <username> server.yml --ask-become-pass
 ```
